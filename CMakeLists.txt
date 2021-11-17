@@ -37,9 +37,20 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 #   ENDIF()
 # ENDIF()
 
+find_package(Eigen3 REQUIRED NO_MODULE)
+#find_package(adolc REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(ipopt REQUIRED IMPORTED_TARGET ipopt)
+
+set(MUJOCO_INCLUDE_DIR "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/include")
+set(MUJOCO_LIB_DIR "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/bin")
+include_directories(${MUJOCO_INCLUDE_DIR})
+link_directories(${MUJOCO_LIB_DIR})
+
 set (ILQR_SOURCES "src/ilqr_core.cpp"
                   "src/derivatives.cpp"
-                  "src/boxqp.cpp")
+                  "src/boxqp.cpp"
+                  "src/mujoco_interface.cxx")
 
 # file(GLOB_RECURSE Foo_SOURCES "src/*.cpp")
 file(GLOB_RECURSE ILQR_HEADERS "include/*.h")
@@ -54,6 +65,10 @@ list(REMOVE_DUPLICATES ILQR_INCLUDE_DIRS)
 include_directories(${ILQR_INCLUDE_DIRS})
 add_executable (run_iLQR "src/run_ilqr.cpp" ${ILQR_SOURCES})
 # target_link_libraries(run_iLQR Threads::Threads)
+
+
+add_executable (run_mj_iLQR "src/run_mj_ilqr.cpp" ${ILQR_SOURCES})
+target_link_libraries(run_mj_iLQR PRIVATE adolc PkgConfig::ipopt Eigen3::Eigen mujoco210 GL glew glfw)
 
 ###
 # Use ExternalProject module to fetch GoogleTest and GoogleMock from internet and compile as third-party dependencies.
