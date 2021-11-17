@@ -35,5 +35,6 @@
 #ifndef ILQR_CONFIG_H
 #define ILQR_CONFIG_H
 
+#define USE_MUJOCO true
 
 #endif //ILQR_CONFIG_H
