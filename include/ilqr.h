@@ -53,6 +53,10 @@ public:
   void output_to_csv(const std::string filename);
   double init_traj(const VectorXd &x_0, const VecOfVecXd &u_0);
 
+  VecOfVecXd getFinalXTraj() {return xs;}
+
+  VecOfVecXd getFinalUTraj() {return us;}
+
 private:
   double dt;
   int T;  // number of state transitions
