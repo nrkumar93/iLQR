@@ -27,9 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /*!
- * \file   run_mj_ilqr.cpp
+ * \file   deriv_test.cpp
  * \author Ramkumar Natarajan (rnataraj@cs.cmu.edu)
- * \date   11/11/21
+ * \date   11/19/21
  */
 
 #include "common.h"
@@ -70,8 +70,8 @@ double qGd[] = {0.0, 0.0};
 //double qG[] = {0.0, M_PI}; /// already on the table
 //double qGd[] = {0.0, 0.0};
 
-
-int main() {
+int main()
+{
 
 //  const char* mjcf_file = "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/model/alt_joint/alt_joint.xml";
 //  const char* mjcf_file = "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/model/pendulum.xml";
@@ -91,9 +91,10 @@ int main() {
     qG[i] = mj->mj_handle.normalize_angle(qG[i]);
   }
 
-  /// ilqr stuff
   iLQR* ilqr;
-  int T = 999; // right now, (T+1) has to be divisible by 10 - see derivatives.cpp. TODO remove this constraint
+  ilqr = new iLQR(mj, dt);
+
+  ilqr->T = 1;
 
   // set start state
   VectorXd x0;
@@ -103,6 +104,8 @@ int main() {
     x0(i) = qS[i];
     x0(DOF+i) = qSd[i];
   }
+  VecOfVecXd x;
+  x.push_back(x0);
 
   // set goal state
   VectorXd goal(2*DOF);
@@ -111,56 +114,42 @@ int main() {
     goal(i) = qG[i];
     goal(DOF+i) = qGd[i];
   }
-
+  x.push_back(goal);
   mj->setGoal(goal);
 
-  // Define problem
-  ilqr = new iLQR(mj, dt);
-
   // Make initialization for control sequence
-  VecOfVecXd u0;
-  VectorXd u_init(DOF); u_init.setZero();
-  for (int i=0; i<T; i++) u0.push_back(u_init);
-//  u0 = mj->findInitU(x0, goal, T+1, dt);
+  VecOfVecXd tau;
+  VectorXd u0(DOF); u0.setZero();
+//  tau.push_back(u0);
+  for (int i=0; i<ilqr->T; i++) tau.push_back(u0);
 
+  VecOfMatXd fx, fu;
+  VecOfVecXd cx; //nx(T+1)
+  VecOfVecXd cu; //mx(T+1)
+  VecOfMatXd cxx; //nxnx(T+1)
+  VecOfMatXd cxu; //nxmx(T+1)
+  VecOfMatXd cuu; //mxmx(T+1)
 
-  // Solve!
-  cout << "Run iLQR!" << endl;
-  auto start = std::chrono::system_clock::now();
-  ilqr->generate_trajectory(x0, u0);
-  auto now = std::chrono::system_clock::now();
-  long int elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
-  cout << "iLQR took: " << elapsed/1000. << " seconds." << endl;
+  fx.resize(ilqr->T);
+  fu.resize(ilqr->T);
+  cx.resize(ilqr->T+1);
+  cu.resize(ilqr->T+1);
+  cxu.resize(ilqr->T+1);
+  cxx.resize(ilqr->T+1);
+  cuu.resize(ilqr->T+1);
 
-  VecOfVecXd x_traj = ilqr->getFinalXTraj();
-  VecOfVecXd u_traj = ilqr->getFinalUTraj();
-  x_traj.pop_back();
-  std::vector<double> t_traj;
-  double pb_scale=1;
-  for (int i=0; i<T+1; ++i) t_traj.push_back(i*dt*pb_scale);
+  ilqr->get_dynamics_derivatives(x, tau, fx, fu);
+  ilqr->get_cost_derivatives(x, tau, cx, cu);
+//  ilqr->get_cost_2nd_derivatives(x, tau, cxx, cxu, cuu);
 
-///// Call Visualizer
-//  const char* mjcf_pb_file = "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/model/alt_joint/alt_joint_pb.xml";
-//  const char* mjcf_pb_file = "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/model/pendulum_pb.xml";
-  const char* mjcf_pb_file = "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/model/ur5_exp_pb.xml";
-//  const char* mjcf_pb_file = "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/model/ur5l_pb.xml";
-//  const char* mjcf_pb_file = "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/model/alt_joint/multi_pendulum_pb.xml";
-  mj->mj_handle.setupFromMJCFFile(mjcf_pb_file);
+  std::cout << "fx:\n" << fx[0] << std::endl;
+  std::cout << "fu:\n" << fu[0] << std::endl;
+  std::cout << "cx:\n" << cx[0] << std::endl;
+  std::cout << "cu:\n" << cu[0] << std::endl;
+  std::cout << "cu:\n" << cxx[0] << std::endl;
+  std::cout << "cu:\n" << cxu[0] << std::endl;
+  std::cout << "cu:\n" << cuu[0] << std::endl;
 
-  std::vector<std::vector<double>> x_vec, dx_vec, u_vec;
-  for (int i=0; i<x_traj.size(); ++i)
-  {
-    std::vector<double> unit_x(x_traj[i].data(), x_traj[i].data()+DOF);
-    std::vector<double> unit_dx(x_traj[i].data()+DOF, x_traj[i].data()+2*DOF);
-    std::vector<double> unit_u(u_traj[i].data(), u_traj[i].data()+DOF);
-
-    x_vec.push_back(unit_x);
-    dx_vec.push_back(unit_dx);
-    u_vec.push_back(unit_u);
-  }
-
-  mj->mj_handle.visualize(t_traj.back(), t_traj, x_vec, dx_vec);
-
-
-  return 0;
 }
+
+

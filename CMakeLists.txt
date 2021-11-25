@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5.0)
 project (iLQR)
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-O3") # -Wall", -Wextra")
+#set(CMAKE_CXX_FLAGS "-O3") # -Wall", -Wextra")
 # set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 
 ###
@@ -69,6 +69,9 @@ add_executable (run_iLQR "src/run_ilqr.cpp" ${ILQR_SOURCES})
 
 add_executable (run_mj_iLQR "src/run_mj_ilqr.cpp" ${ILQR_SOURCES})
 target_link_libraries(run_mj_iLQR PRIVATE adolc PkgConfig::ipopt Eigen3::Eigen mujoco210 GL glew glfw)
+
+add_executable (deriv_test "src/deriv_test.cpp" ${ILQR_SOURCES})
+target_link_libraries(deriv_test PRIVATE adolc PkgConfig::ipopt Eigen3::Eigen mujoco210 GL glew glfw)
 
 ###
 # Use ExternalProject module to fetch GoogleTest and GoogleMock from internet and compile as third-party dependencies.

@@ -57,7 +57,7 @@ public:
 
   VecOfVecXd getFinalUTraj() {return us;}
 
-private:
+//private:
   double dt;
   int T;  // number of state transitions
 

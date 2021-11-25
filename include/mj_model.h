@@ -65,8 +65,8 @@ public:
     /// bounds on u
     for (int i=0; i<u_dims; ++i)
     {
-      u_min(i) = -10;
-      u_max(i) = 10;
+      u_min(i) = -100;
+      u_max(i) = 100;
     }
   }
 
@@ -121,9 +121,9 @@ public:
 
   virtual double cost(const VectorXd& x, const VectorXd& u) override {
 
-    bool incl_frc_diff = false;
+    bool incl_frc_diff = true;
     bool incl_ctrl = false;
-    bool incl_jnt_dist = true;
+    bool incl_jnt_dist = false;
 
     double frc_diff_cost = 0;
     double ctrl_cost = 0;
@@ -197,13 +197,19 @@ public:
 
 //    // Printing
 ////  std::cout << "frc_diff_norm: " << frc_diff_norm << " del_q_norm: " << del_q_norm << std::endl;
-//  std::cout << "del_q_norm: " << del_q_norm << "\t" << "u norm: " << u.dot(u) << "\n";
+//  std::cout << "frc_diff_cost: " << frc_diff_cost << "\t" << "ctrl_cost: " << ctrl_cost << "\t" << "jnt_dist_cost: " << jnt_dist_cost << "\n";
+
+    std::cout << "=================================" << std::endl;
+    std::cout << "x\n----------\n" << x << std::endl;
+    std::cout << "u\n----------\n" << u << std::endl;
+    std::cout << "total_cost: " << total_cost << std::endl;
+    std::cout << "=================================" << std::endl;
 
     return total_cost;
   }
 
   virtual double final_cost(const VectorXd& x) override {
-    double rho=10000;
+    double rho=100;
     double jnt_dist_cost = 0;
     for (int i=0; i<mj_model->nq; ++i)
     {
@@ -245,8 +251,8 @@ public:
       }
       for (int j=0; j<mj_model->nv; ++j)
       {
-//        dq[j] = mj_handle.interp1(0, N-1, i, dq0[j], dqF[j]);
-        dq[j] = mj_handle.shortest_angular_distance(prev_q[j],q[j])/dt;
+        dq[j] = mj_handle.interp1(0, N-1, i, dq0[j], dqF[j]);
+//        dq[j] = mj_handle.shortest_angular_distance(prev_q[j],q[j])/dt;
 //        ddq[j] = (dq[j]-prev_dq[j])/dt;
       }
 
