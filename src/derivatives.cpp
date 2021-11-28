@@ -8,6 +8,7 @@
 #define OMP_NUM_THREADS 4
 
 #define eps2 1e-3 // For finite differencing
+//#define eps2 1 // For finite differencing
 
 using namespace std::placeholders;
 

@@ -140,15 +140,15 @@ int main()
 
   ilqr->get_dynamics_derivatives(x, tau, fx, fu);
   ilqr->get_cost_derivatives(x, tau, cx, cu);
-//  ilqr->get_cost_2nd_derivatives(x, tau, cxx, cxu, cuu);
+  ilqr->get_cost_2nd_derivatives(x, tau, cxx, cxu, cuu);
 
   std::cout << "fx:\n" << fx[0] << std::endl;
   std::cout << "fu:\n" << fu[0] << std::endl;
   std::cout << "cx:\n" << cx[0] << std::endl;
   std::cout << "cu:\n" << cu[0] << std::endl;
-  std::cout << "cu:\n" << cxx[0] << std::endl;
-  std::cout << "cu:\n" << cxu[0] << std::endl;
-  std::cout << "cu:\n" << cuu[0] << std::endl;
+  std::cout << "cxx:\n" << cxx[0] << std::endl;
+  std::cout << "cxu:\n" << cxu[0] << std::endl;
+  std::cout << "cuu:\n" << cuu[0] << std::endl;
 
 }
 

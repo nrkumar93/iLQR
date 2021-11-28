@@ -140,7 +140,7 @@ void iLQR::generate_trajectory() {
       diverge = backward_pass();
 
       if (diverge != 0) {
-        // cout << "backward pass diverged" << endl;
+         cout << "backward pass diverged" << endl;
         dlambda = std::max(dlambda * lambdaFactor, lambdaFactor);
         lambda  = std::max(lambda * dlambda, lambdaMin);
         if (lambda > lambdaMax) break;
@@ -220,7 +220,7 @@ void iLQR::generate_trajectory() {
       }
 
       if (!fwdPassDone) {
-        // cout << "Forward pass failed" << endl;
+         cout << "Forward pass failed" << endl;
         alpha = 0.0; // signals failure of forward pass
       }
     }

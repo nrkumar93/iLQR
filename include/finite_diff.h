@@ -7,6 +7,7 @@
 #include <cmath>
 
 static const double eps = 1e-3;
+//static const double eps = 1;
 
 using Eigen::VectorXd;
 using Eigen::MatrixXd;

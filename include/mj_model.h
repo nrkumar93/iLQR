@@ -65,8 +65,8 @@ public:
     /// bounds on u
     for (int i=0; i<u_dims; ++i)
     {
-      u_min(i) = -100;
-      u_max(i) = 100;
+      u_min(i) = -10000;
+      u_max(i) = 10000;
     }
   }
 
@@ -123,7 +123,7 @@ public:
 
     bool incl_frc_diff = true;
     bool incl_ctrl = false;
-    bool incl_jnt_dist = false;
+    bool incl_jnt_dist = true;
 
     double frc_diff_cost = 0;
     double ctrl_cost = 0;
@@ -199,11 +199,11 @@ public:
 ////  std::cout << "frc_diff_norm: " << frc_diff_norm << " del_q_norm: " << del_q_norm << std::endl;
 //  std::cout << "frc_diff_cost: " << frc_diff_cost << "\t" << "ctrl_cost: " << ctrl_cost << "\t" << "jnt_dist_cost: " << jnt_dist_cost << "\n";
 
-    std::cout << "=================================" << std::endl;
-    std::cout << "x\n----------\n" << x << std::endl;
-    std::cout << "u\n----------\n" << u << std::endl;
-    std::cout << "total_cost: " << total_cost << std::endl;
-    std::cout << "=================================" << std::endl;
+//    std::cout << "=================================" << std::endl;
+//    std::cout << "x\n----------\n" << x << std::endl;
+//    std::cout << "u\n----------\n" << u << std::endl;
+//    std::cout << "total_cost: " << total_cost << std::endl;
+//    std::cout << "=================================" << std::endl;
 
     return total_cost;
   }
