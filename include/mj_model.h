@@ -131,7 +131,7 @@ public:
 
     double w_frc_diff = 1;
     double w_ctrl = 1;
-    double w_jnt_dist = 1;
+    double w_jnt_dist = 10;
 
     double total_cost = 0;
 

@@ -193,7 +193,12 @@ void iLQR::generate_trajectory() {
             // cout << "u over limits: " << us[i][0] << ", " << u_plus_feedforward[i][0] << "\n" << k[i] << endl;
           // }
         }
-        
+
+        for (int i=0; i<u_plus_feedforward.size(); ++i)
+        {
+          cout << u_plus_feedforward[i].transpose() << std::endl;
+        }
+
         new_cost = forward_pass(x0, u_plus_feedforward);
 
         dcost    = cost_s - new_cost;
@@ -321,6 +326,11 @@ double iLQR::forward_pass(const VectorXd &x0, const VecOfVecXd &u) {
 
     // This is the wrong way, but the only way that works right now
     us[t] = u_curr; // no clamping at all!
+    cout << "=================" << endl;
+    cout << u_curr.transpose() << endl;
+    cout << "=================" << endl;
+    if (K.size()>0) cout << K[t] << endl;
+    cout << "=================" << endl;
     total_cost += model->cost(x_curr, u_curr);
     x_curr = model->integrate_dynamics(x_curr, u_curr, dt);
     

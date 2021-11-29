@@ -19,7 +19,7 @@ static double dlambda = 1;
 static const double lambdaFactor = 1.6;
 static const double lambdaMax = 1e11;
 static const double lambdaMin = 1e-8;
-static const double zMin = 0;
+static const double zMin = -10;
 
 static std::vector<double> alpha_vec = {1.0000, 0.5012, 0.2512, 0.1259, 0.0631, 0.0316, 0.0158, 0.0079, 0.0040, 0.0020, 0.0010};
 static Eigen::Map<VectorXd> Alpha(alpha_vec.data(), alpha_vec.size());

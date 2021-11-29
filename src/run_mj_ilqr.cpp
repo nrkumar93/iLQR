@@ -56,7 +56,8 @@
 //double qG[] = {-2.19325, 1.25752, -0.260757, -6.23505}; /// already on the table
 //double qGd[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 double qS[] = {-2.55714, 1.25741}; /// already on the table
-double qG[] = {-2.35714, 1.25741}; /// already on the table
+//double qG[] = {-2.35714, 1.25741}; /// already on the table
+double qG[] = {-1.09187, 1.25741}; /// already on the table
 double qSd[] = {0.0, 0.0};
 double qGd[] = {0.0, 0.0};
 
@@ -82,7 +83,8 @@ int main() {
 //  const char* mjcf_file = "/home/gaussian/cmu_ri_phd/phd_misc/mujoco210/model/alt_joint/multi_pendulum.xml";
 
   // Load mujoco model
-  double dt = 0.002;
+//  double dt = 0.002;
+  double dt = 0.1;
   Model* mj = new MujocoModel(mjcf_file, dt);
 
   for (int i=0; i<mj->mj_model->nq; ++i)
@@ -93,7 +95,7 @@ int main() {
 
   /// ilqr stuff
   iLQR* ilqr;
-  int T = 999; // right now, (T+1) has to be divisible by 10 - see derivatives.cpp. TODO remove this constraint
+  int T = 9; // right now, (T+1) has to be divisible by 10 - see derivatives.cpp. TODO remove this constraint
 
   // set start state
   VectorXd x0;
@@ -120,8 +122,12 @@ int main() {
   // Make initialization for control sequence
   VecOfVecXd u0;
   VectorXd u_init(DOF); u_init.setZero();
-  for (int i=0; i<T; i++) u0.push_back(u_init);
-//  u0 = mj->findInitU(x0, goal, T+1, dt);
+//  for (int i=0; i<T; i++) u0.push_back(u_init);
+  u0 = mj->findInitU(x0, goal, T+1, dt);
+  for (int i=0; i<u0.size(); ++i)
+  {
+    cout << u0[i].transpose() << endl;
+  }
 
 
   // Solve!
@@ -136,7 +142,7 @@ int main() {
   VecOfVecXd u_traj = ilqr->getFinalUTraj();
   x_traj.pop_back();
   std::vector<double> t_traj;
-  double pb_scale=1;
+  double pb_scale=10;
   for (int i=0; i<T+1; ++i) t_traj.push_back(i*dt*pb_scale);
 
 ///// Call Visualizer
